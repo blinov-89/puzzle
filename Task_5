@@ -1,0 +1,12 @@
+text = b'Shannon contributed to the field of cryptanalysis for national defense during World War II, including his basic work on codebreaking and secure telecommunications.'
+key = b'Shannon'
+
+def repeat_key(text, key):
+    
+    enc = []      
+    for i in range(0, len(text)):
+        enc.append(text[i] ^ key[i % len(key)])
+    return bytes(enc)
+      
+print(repeat_key(text, key).hex())
+
