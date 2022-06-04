@@ -1,0 +1,46 @@
+
+from itertools import cycle
+from collections import Counter
+import string
+
+def xor_crypt_string(data, key):
+    return ''.join(chr(ord(x) ^ ord(y)) for (x,y) in zip(data, cycle(key)))
+    
+valid_chars = string.ascii_uppercase + string.ascii_lowercase + string.digits + '.,!?;:\'- \n'
+
+def validate_str(s):
+    return all(c in valid_chars for c in s)
+    
+def get_text_from_hex(str_hex):
+    result = bytearray.fromhex(str_hex).decode("latin-1")
+        
+    return result
+    
+def decode_from_xor(text_data):
+    freq = Counter()
+​
+    for i in text_data:
+        freq[i] += 1
+        
+    top_freq = [' ', 'e', 't', 'a', 'o']
+​
+    possible_chars = []
+    for j in freq.most_common()[:5]:
+        for k in top_freq:
+            possible_chars.append(chr(ord(j[0]) ^ ord(k)))
+​
+    result = ""
+    for key in possible_chars:
+        result = xor_crypt_string(text_data, key)
+        if validate_str(result):
+            result = key
+            break
+    else:
+        return
+    
+    return result
+    
+a = '19367831362e3d2b2c353d362c783136783336372f343d3c3f3d7839342f39212b782839212b782c303d783a3d2b2c7831362c3d2a3d2b2c'
+​
+xor_crypt_string(get_text_from_hex(a), decode_from_xor(get_text_from_hex(a)))
+#'An investment in knowledge always pays the best interest'
