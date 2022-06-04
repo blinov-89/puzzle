@@ -1,46 +1,29 @@
 
-from itertools import cycle
-from collections import Counter
-import string
+input = '19367831362e3d2b2c353d362c783136783336372f343d3c3f3d7839342f39212b782839212b782c303d783a3d2b2c7831362c3d2a3d2b2c'
 
-def xor_crypt_string(data, key):
-    return ''.join(chr(ord(x) ^ ord(y)) for (x,y) in zip(data, cycle(key)))
-    
-valid_chars = string.ascii_uppercase + string.ascii_lowercase + string.digits + '.,!?;:\'- \n'
+res = {}
 
-def validate_str(s):
-    return all(c in valid_chars for c in s)
-    
-def get_text_from_hex(str_hex):
-    result = bytearray.fromhex(str_hex).decode("latin-1")
-        
-    return result
-    
-def decode_from_xor(text_data):
-    freq = Counter()
-​
-    for i in text_data:
-        freq[i] += 1
-        
-    top_freq = [' ', 'e', 't', 'a', 'o']
-​
-    possible_chars = []
-    for j in freq.most_common()[:5]:
-        for k in top_freq:
-            possible_chars.append(chr(ord(j[0]) ^ ord(k)))
-​
-    result = ""
-    for key in possible_chars:
-        result = xor_crypt_string(text_data, key)
-        if validate_str(result):
-            result = key
-            break
+def xor(str1, str2):
+    return int(str1, 16) ^ int(str2, 16)
+
+for i in range(0, len(input), 2):
+    if input[i:i+2] in res.keys():
+        res[input[i:i+2]] += 1
     else:
-        return
-    
-    return result
-    
-a = '19367831362e3d2b2c353d362c783136783336372f343d3c3f3d7839342f39212b782839212b782c303d783a3d2b2c7831362c3d2a3d2b2c'
-​
-xor_crypt_string(get_text_from_hex(a), decode_from_xor(get_text_from_hex(a)))
+        res[input[i:i+2]] = 1
+
+max_value = max(res.values())
+keys_all = []
+list(map(lambda key, value:
+         keys_all.append(key) if value == max_value else (),
+         res.keys(),
+         res.values()))
+
+char = 'e'.encode('ascii').hex()
+keys = list(map(lambda x: hex(xor(char, x)), keys_all))
+
+input = list(map(lambda i: input[i:i+2], range(0, len(input), 2)))
+hex = [[chr(xor(key, a)) for a in input] for key in keys]
+
+print(list((map(lambda x: ''.join(x), hex)))[1])
 #'An investment in knowledge always pays the best interest'
