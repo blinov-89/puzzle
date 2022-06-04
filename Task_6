@@ -1,0 +1,102 @@
+import string
+from itertools import cycle, product
+from collections import Counter, defaultdict
+alphabet_chars = string.ascii_uppercase + string.ascii_lowercase + string.digits + '+/'
+alphabet = {}
+
+for i in range(64):
+    alphabet[alphabet_chars[i]] = bin(i)[2:].zfill(6)
+valid_chars = string.ascii_uppercase + string.ascii_lowercase + string.digits + '.,!?;:\'- \n'
+
+def validate_str(s):
+    return all(c in valid_chars for c in s)
+def base64_to_hex(base64_str):
+    result = ""
+    for i in range(len(base64_str)):
+        if base64_str[i] == "=":
+            if i+1 == len(base64_str):
+                result = result[:-2]
+            else:
+                result = result[:-4]
+            break
+        if base64_str[i] != '\n':
+            result += alphabet[base64_str[i]]
+
+    final_result = ""
+    for i in range(0, len(result), 8):
+        cur_hex = hex(int(result[i:i+8], 2))[2:]
+        if len(cur_hex) == 1:
+            cur_hex = "0" + cur_hex
+        final_result += cur_hex
+        
+    return final_result
+def get_text_from_hex(str_hex):
+    result = bytearray.fromhex(str_hex).decode("latin-1")
+        
+    return result
+def xor_crypt_string(data, key):
+    return ''.join(chr(ord(x) ^ ord(y)) for (x,y) in zip(data, cycle(key)))
+def define_key_length(str_data):
+    max_freq, max_len = 0, 0
+
+    for i in range(int(len(str_data)/2)):
+        offset_text = str_data[i+1:] + str_data[:i+1]
+        xor = xor_crypt_string(str_data, offset_text)
+
+        freq = Counter()
+        for j in xor:
+            freq[j] += 1
+
+        cur_freq = freq.most_common()[0][1]/len(str_data)
+
+        if cur_freq > max_freq:
+            max_freq = cur_freq
+            max_len = i+1  
+            
+    return max_len
+def decode_from_xor(text_data):
+    freq = Counter()
+
+    for i in text_data:
+        freq[i] += 1
+        
+    top_freq = [' ', 'e', 't', 'a', 'o', 'i']
+
+    possible_chars = []
+    for j in freq.most_common()[:6]:
+        for k in top_freq:
+            possible_chars.append(chr(ord(j[0]) ^ ord(k)))
+
+    result = ""
+    for key in possible_chars:
+        result = xor_crypt_string(text_data, key)
+        if validate_str(result):
+            result = key
+            break
+    else:
+        return
+    
+    return result
+def decode_text(text):
+    key_len = define_key_length(text)
+    
+    groups = defaultdict(str)
+    for i, char in enumerate(str_data):
+        groups[i % 22] += char
+
+    key_chars = []
+    for i, gr_text in groups.items():
+        cur_key = decode_from_xor(gr_text)
+        key_chars.append(cur_key)
+
+    key = ''.join(key_chars)
+    result = {'key': key,
+              'text': xor_crypt_string(text, key)}
+            
+    return result
+with open("task16.input") as f:
+    data = f.read().strip()
+hex_data = base64_to_hex(data)
+str_data = get_text_from_hex(hex_data)
+test = decode_text(str_data)
+test
