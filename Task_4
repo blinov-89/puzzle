@@ -1,1 +1,35 @@
+from collections import Counter
+import re
+import lorem
 
+with open('task.input') as f:
+    data = f.readlines()
+   
+stats = Counter(' '.join([re.compile('[^A-Za-zА-Яа-я ёЁ]').sub('', lorem.text()) for _ in range(100)]))
+
+def from16to2(str16):
+    return "{0:08b}".format(int(str16, 16))
+    
+ def xor(bin1, bin2):
+    return int(bin1, 2) ^ int(bin2, 2)
+    
+ def decypher_text(text):
+
+    text_stats = Counter([text[i:i + 2] for i in range(0, len(text), 2)])
+    for char_from_stat in stats.most_common():
+        for num, char_from_text in enumerate(text_stats.most_common()):
+            char_from_stat_bin = bin(int(ord(char_from_stat[0])))
+            char_from_text_bin = from16to2(char_from_text[0])
+            
+            decyphered_text = [chr(xor(bin(xor(char_from_stat_bin, char_from_text_bin)), from16to2(text[i:i + 2]))) 
+                               for i in range(0, len(text), 2)]
+            decyphered_text = ''.join(decyphered_text)
+                        
+            if re.findall('[\w\d\s]*', decyphered_text)[0] == decyphered_text:
+                return decyphered_text
+    return None
+    
+    for num, row in enumerate(data):
+    res = decypher_text(row.strip())
+    if res is not None:
+        print(num, res)
