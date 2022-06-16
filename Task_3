@@ -1,4 +1,3 @@
-
 input = '19367831362e3d2b2c353d362c783136783336372f343d3c3f3d7839342f39212b782839212b782c303d783a3d2b2c7831362c3d2a3d2b2c'
 
 res = {}
@@ -26,4 +25,3 @@ input = list(map(lambda i: input[i:i+2], range(0, len(input), 2)))
 hex = [[chr(xor(key, a)) for a in input] for key in keys]
 
 print(list((map(lambda x: ''.join(x), hex)))[1])
-#'An investment in knowledge always pays the best interest'
