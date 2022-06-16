@@ -10,10 +10,10 @@ stats = Counter(' '.join([re.compile('[^A-Za-zА-Яа-я ёЁ]').sub('', lorem.t
 def from16to2(str16):
     return "{0:08b}".format(int(str16, 16))
     
- def xor(bin1, bin2):
+def xor(bin1, bin2):
     return int(bin1, 2) ^ int(bin2, 2)
     
- def decypher_text(text):
+def decypher_text(text):
 
     text_stats = Counter([text[i:i + 2] for i in range(0, len(text), 2)])
     for char_from_stat in stats.most_common():
