@@ -29,7 +29,7 @@ def from16to2(str16):
                 return decyphered_text
     return None
     
-    for num, row in enumerate(data):
+ for num, row in enumerate(data):
     res = decypher_text(row.strip())
     if res is not None:
         print(num, res)
