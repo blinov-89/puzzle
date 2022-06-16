@@ -2,7 +2,7 @@ from collections import Counter
 import re
 import lorem
 
-with open('task.input') as f:
+with open('task140.input') as f:
     data = f.readlines()
    
 stats = Counter(' '.join([re.compile('[^A-Za-zА-Яа-я ёЁ]').sub('', lorem.text()) for _ in range(100)]))
